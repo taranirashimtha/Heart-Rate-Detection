@@ -1,0 +1,45 @@
+# Helper Methods
+def buildGauss(frame, levels):
+    pyramid = [frame]			
+    for level in range(levels):
+        frame = cv2.pyrDown(frame)
+        pyramid.append(frame)
+    return pyramid
+
+
+frame:
+Type: Image (usually a NumPy array)
+Description: The input image on which the Gaussian pyramid will be built.
+levels:
+Type: Integer
+Description: The number of levels (or scales) in the Gaussian pyramid. This determines how many downscaled versions of the image will be created.
+pyramid = [frame]   start by adding the original image to the list pyramid. This list will store all levels of the pyramid.
+Loop: Iterates over the range specified by levels.
+cv2.pyrDown(frame): Applies a Gaussian blur and downscaling operation to the current image frame, effectively reducing its size and smoothing it.
+Gaussian Blur: Helps in smoothing the image and removing high-frequency noise.
+Downscaling: Reduces the image dimensions (both width and height) by a factor of 2.
+Append: Adds the downscaled image to the pyramid list.
+
+firstFrame: An empty frame used as a base for building the Gaussian pyramid.
+firstGauss: The image at the desired level of the Gaussian pyramid derived from firstFrame.
+videoGauss: A buffer to store Gaussian pyramid images for each frame, allowing for multi-frame analysis.
+fourierTransformAvg: Stores the average Fourier transform values for frames in the buffer, which is essential for heart rate analysis.
+
+Calculation:
+np.arange(bufferSize): Creates an array of integers from 0 to bufferSize-1. This represents the indices in the buffer.
+1.0 * videoFrameRate: Converts videoFrameRate to a floating-point number (in case it was an integer) to ensure precise calculations.
+(1.0 * bufferSize): Converts bufferSize to a floating-point number.
+(1.0 * videoFrameRate) * np.arange(bufferSize) / (1.0 * bufferSize): This formula calculates the frequency for each index in the buffer. The frequency values are evenly distributed from 0 to the maximum frequency that can be represented given the frame rate and buffer size.
+e: Creates a boolean mask to isolate frequencies within the specified range.
+Calculation:
+frequencies >= minFrequency: Creates a boolean array where each element is True if the corresponding frequency is greater than or equal to minFrequency, and False otherwise.
+frequencies <= maxFrequency: Creates a boolean array where each element is True if the corresponding frequency is less than or equal to maxFrequency, and False otherwise.
+&: Performs an element-wise logical AND operation between the two boolean arrays, resulting in a mask where only the frequencies within the specified range (minFrequency to maxFrequency) are True.
+This mask will be used to filter out frequencies outside the desired range.
+
+Purpose and Usage
+Frequency Calculation: The frequencies array represents the frequency components corresponding to each index in the buffer. This is essential for analyzing periodic signals in the data.
+Bandpass Filter Mask: The mask is used to allow only certain frequencies to pass through while filtering out others. This is crucial for isolating specific frequency components related to the heart rate.
+
+
+Link to chatgpt:  https://chatgpt.com/c/e19210d3-5887-4c48-aa17-0a584ad1beff
